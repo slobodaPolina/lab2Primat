@@ -7,7 +7,7 @@ var NODES = 8; // IT HAS TO BE SIZE OF p AND a
 var p = [
 	[0, 1, 0, 0, 0, 0, 0, 0],
 	[0, 0.5, 0.2, 0, 0, 0, 0, 0.3],
-	[0, 0, 0, 0.5, 0, 0, 0.5, 0],
+	[0, 0, 0.4, 0.1, 0, 0, 0.5, 0],
 	[0, 0.2, 0.1, 0, 0.5, 0.2, 0, 0],
 	[0, 0, 0, 0.1, 0, 0.1, 0.3, 0.5],
 	[0, 0, 0.4, 0, 0.2, 0.4, 0, 0],
@@ -47,21 +47,22 @@ function analyseState(a) {
 		console.log(diff);
 		a = next;
 	}
-	console.log(a);
-	console.log("----- FINISHED -----")
+	console.log("SOLUTION IS " + a);
+	console.log("----- FINISHED -----");
+	return a;
 }
 
 // анализируем первый вектор начальных состояний
-analyseState([0, 0.1, 0.2, 0, 0.3, 0.1, 0, 0.3]);
+var test1 = analyseState([0, 0.1, 0.2, 0, 0.3, 0.1, 0, 0.3]);
 
 // а теперь второй
-analyseState([0.1, 0.1, 0.1, 0, 0.2, 0.5, 0, 0]);
+var test2 = analyseState([0.1, 0.1, 0.1, 0, 0.2, 0.5, 0, 0]);
 
 
 
 // теперь аналитически.
-// уравнение pi = pi * Pt (Это значит, что вектор состояния не будет меняться)
-// pi * (E - Pt) = 0. Назовем (E - Pt) = B;    pi * B = 0
+// уравнение pi = pi * p (Это значит, что вектор состояния не будет меняться)
+// pi * (E - p) = 0. Назовем (E - p) = B;    pi * B = 0
 function createSquareMatrix(side) {
 	var matrix = new Array(side);
 	for (var i = 0; i < side; i++) {
@@ -73,7 +74,7 @@ function createSquareMatrix(side) {
 var B = createSquareMatrix(NODES);
 for (var i = 0; i < NODES; i++) {
 	for (var j = 0; j < NODES; j++) {
-		B[i][j] = - p[j][i];
+		B[i][j] = - p[i][j];
 		if (i == j) {
 			B[i][j] += 1;
 		}
@@ -88,7 +89,7 @@ for (var i = 0; i < NODES; i++) {
 // по идее, если так не сделать, то будет возможно одно из решений pi = 0,
 // и это нам явно не подходит
 for (var i = 0; i < NODES; i++) {
-	B[i][NODES] = 1;
+	B[i][NODES - 1] = 1;
 }
 
 // надо заметить, что это будет эквивалентно Bt * pit = (0, 0, ..., 0, 1)t,
@@ -110,27 +111,28 @@ function Determinant(A)	{
 		));
 	}
 	for (var i = 0; i < n; i++) {
-		for (var h = 0; h < n - 1; h++) {
+		for (var h = 0; h < n - 1; h++)
 			subA[h] = [];
-			for (var a = 1; a < n; a++) {
-				for (var b = 0; b < n; b++) {
-					if (b < i) subA[a - 1][b] = A[a][b];
-					else if (b > i) subA[a - 1][b - 1] = A[a][b];
-				}
+		for (var a = 1; a < n; a++) {
+			for (var b = 0; b < n; b++) {
+				if (b < i) subA[a - 1][b] = A[a][b];
+				else if (b > i) subA[a - 1][b - 1] = A[a][b];
 			}
-			var sign = (i % 2 == 0) ? 1 : -1;
-			detA += sign * A[0][i] * Determinant(subA);
 		}
+		var sign = (i % 2 == 0) ? 1 : -1;
+		detA += sign * A[0][i] * Determinant(subA);
 	}
 	return detA;
 }
 
 // Считаем определитель
 if (Determinant(B) != 0) {
+	console.log("----- ANALYTICS -----");
+	var result = [];
 	// меняем последовательно СТРОКИ B на свободные члены (тк В транспонирована)
 	// и считаем остальные определители
 	for(var i = 0; i < NODES; i++) {
-		console.log(
+		result.push(
 			Determinant(
 				B.slice(0, i)
 				.concat([[0, 0, 0, 0, 0, 0, 0, 1]])
@@ -138,6 +140,9 @@ if (Determinant(B) != 0) {
 			)
 		);
 	}
+	console.log("SOLUTION IS " + result);
+	console.log("SQUAREDIFF FROM TEST 1: " + countSquareDiff(result, test1));
+	console.log("SQUAREDIFF FROM TEST 2: " + countSquareDiff(result, test2));
 } else {
 	console.log("I am really sorry, I cant solve it");
 	// i cannot guarantee there is the only one solution
