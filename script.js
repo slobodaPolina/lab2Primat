@@ -59,15 +59,15 @@ analyseState([0.1, 0.1, 0.1, 0, 0.2, 0.5, 0, 0]);
 
 
 
-//теперь аналитически.
-//уравнение pi = pi * Pt (Это значит, что вектор состояния не будет меняться)
+// теперь аналитически.
+// уравнение pi = pi * Pt (Это значит, что вектор состояния не будет меняться)
 // pi * (E - Pt) = 0. Назовем (E - Pt) = B;    pi * B = 0
 function createSquareMatrix(side) {
-		var matrix = new Array(side);
-		for (var i = 0; i < side; i++) {
-			matrix[i] = new Array(side);
-		}
-		return matrix;
+	var matrix = new Array(side);
+	for (var i = 0; i < side; i++) {
+		matrix[i] = new Array(side);
+	}
+	return matrix;
 }
 
 var B = createSquareMatrix(NODES);
@@ -110,7 +110,7 @@ function Determinant(A)	{
 		));
 	}
 	for (var i = 0; i < n; i++) {
-		for (var h = 0; h < n - 1; h++)
+		for (var h = 0; h < n - 1; h++) {
 			subA[h] = [];
 			for (var a = 1; a < n; a++) {
 				for (var b = 0; b < n; b++) {
@@ -120,6 +120,7 @@ function Determinant(A)	{
 			}
 			var sign = (i % 2 == 0) ? 1 : -1;
 			detA += sign * A[0][i] * Determinant(subA);
+		}
 	}
 	return detA;
 }
@@ -137,7 +138,6 @@ if (Determinant(B) != 0) {
 			)
 		);
 	}
-
 } else {
 	console.log("I am really sorry, I cant solve it");
 	// i cannot guarantee there is the only one solution
