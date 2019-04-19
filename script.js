@@ -1,6 +1,42 @@
-var STEPS = 3;
-var EPS = 0.000001;
+
 var NODES = 8; // IT HAS TO BE SIZE OF p AND a
+
+function multiplyM(mat, n) { //[line][column]
+	var result = [];
+	for(var i = 0; i < NODES; i++) {
+		result[i] = Array(NODES).fill(0);
+		for(var u = 0; u < NODES; u ++) {
+			result[i][u] = mat[i][u];
+		}
+	}
+
+	var res1 = [];
+	for(var i = 0; i < NODES; i++) {
+		res1[i] = Array(NODES).fill(0);
+	}
+
+	for(var u = 0; u < n; u++) {
+		for(var i = 0; i < NODES; i++) {
+			for(var j = 0; j < NODES; j++) {
+				for(var k = 0; k < NODES; k++) {
+					res1[i][j] += result[i][k] * mat[j][k];
+				}
+			}
+		}
+		for(var i = 0; i < NODES; i++) {
+			for(var j = 0; j < NODES; j ++) {
+				result[i][j] = res1[i][j];
+			}
+		}
+		for(var i = 0; i < NODES; i++) {
+			res1[i] = Array(NODES).fill(0);
+		}
+	}
+	return result;
+}
+
+
+var EPS = 0.000001;
 
 // вероятности переходов между верщинами (состояниями)
 // матрица перехода за один шаг
@@ -14,6 +50,14 @@ var p = [
 	[0.2, 0, 0, 0, 0, 0.7, 0.1, 0],
 	[0.3, 0, 0, 0.3, 0, 0, 0, 0.4]
 ];
+
+var t = multiplyM(p, 20);
+for(var i = 0; i < NODES; i++) {
+	for(var j = 0; j < NODES; j++) {
+		console.log(t[i][j] + " ");
+	}
+	console.log();
+}
 
 // ищем численно, начальный вектор умножается на матрицу перехода,
 // каждый раз при этом получаем
